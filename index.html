@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>RIM KLONG POS - สั่งอาหาร</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- ป้องกัน 404 Favicon -->
+  <link rel="icon" href="data:,"> 
+  
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body class="front-page theme-light">
+  <header class="front-header glass-strong">
+    <div class="front-brand">
+      <div class="brand-logo">🍃</div>
+      <div class="brand-text">
+        <div class="brand-name">RIM KLONG</div>
+        <div class="brand-sub">Order · Table <span id="tableName">-</span></div>
+      </div>
+    </div>
+    <div class="front-actions">
+      <button id="themeToggle" class="icon-btn" aria-label="Toggle theme">🌙</button>
+    </div>
+  </header>
+
+  <main class="front-main">
+
+    <!-- ส่วนประวัติออเดอร์ -->
+    <section class="front-section glass">
+      <div class="menu-header">
+        <h2 class="section-title">ออเดอร์ทั้งหมด</h2>
+        <button id="toggleHistory" class="btn small">ดูออเดอร์ที่เคยสั่ง</button>
+      </div>
+      <!-- เพิ่ม style display:none ไว้ก่อน แล้ว JS จะมา toggle -->
+      <div id="frontHistory" class="history-list" style="display:none; margin-top:10px;">
+        <p style="text-align:center;color:var(--text-sub);">กำลังโหลดข้อมูล...</p>
+      </div>
+    </section>
+
+    <!-- ส่วนเมนูอาหาร -->
+    <section class="front-section glass">
+      <div class="menu-header">
+        <h2 class="section-title">เมนูอาหาร</h2>
+        <input id="searchMenu" type="text" class="search-input" placeholder="🔍 ค้นหาเมนูอาหาร..." />
+      </div>
+
+      <div id="frontCategories" class="front-category-strip"></div>
+
+      <div id="frontMenu" class="front-menu-grid"></div>
+    </section>
+
+  </main>
+
+  <button id="cartBtn" class="cart-fab" aria-label="ตะกร้าสินค้า">
+    🛒
+    <span id="cartCount" class="cart-badge">0</span>
+  </button>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="assets/js/app.js"></script>
+
+  <script>
+    (function () {
+      const body = document.body;
+      const btn = document.getElementById("themeToggle");
+
+      const saved = localStorage.getItem("rk_theme") || "light";
+      if (saved === "dark") {
+        body.classList.remove("theme-light");
+        body.classList.add("theme-dark");
+        if (btn) btn.textContent = "☀️";
+      }
+
+      if (btn) {
+        btn.addEventListener("click", () => {
+          const isDark = body.classList.contains("theme-dark");
+          if (isDark) {
+            body.classList.remove("theme-dark");
+            body.classList.add("theme-light");
+            btn.textContent = "🌙";
+            localStorage.setItem("rk_theme", "light");
+          } else {
+            body.classList.remove("theme-light");
+            body.classList.add("theme-dark");
+            btn.textContent = "☀️";
+            localStorage.setItem("rk_theme", "dark");
+          }
+        });
+      }
+    })();
+  </script>
+
+</body>
+</html>

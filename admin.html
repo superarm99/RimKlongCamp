@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>RIM KLONG POS — Back Office</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- ป้องกัน 404 Favicon -->
+  <link rel="icon" href="data:,">
+
+  <!-- FONT -->
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- MAIN STYLE -->
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+
+<body class="admin-body theme-light">
+
+  <!-- =========== SIDEBAR =========== -->
+  <aside class="sidebar glass">
+    <div class="sidebar-header">
+      <h2 class="brand">
+        RIM KLONG<br />
+        <span>Back Office · SuperA</span>
+      </h2>
+    </div>
+
+    <nav class="sidebar-menu">
+      <button class="menu-item active" data-target="tabDashboard">📊 Dashboard</button>
+      <button class="menu-item" data-target="tabStatus">🪑 สถานะลูกค้าในร้าน</button>
+      <button class="menu-item" data-target="tabLayout">📐 จัดการผังร้าน 2D</button>
+      <button class="menu-item" data-target="tabProducts">🍽 จัดการสินค้า</button>
+      <button class="menu-item" data-target="tabCategories">📁 หมวดหมู่สินค้า</button>
+      
+      <!-- เมนูออเดอร์ จะมี span id="sidebarOrderCount" ไว้ใส่เลขแจ้งเตือน -->
+      <button class="menu-item" data-target="tabOrders" style="justify-content:space-between;">
+        <span>🧾 ออเดอร์</span>
+        <span id="sidebarOrderCount" class="sidebar-badge" style="display:none;">0</span>
+      </button>
+      
+      <button class="menu-item" data-target="tabKitchen">👨‍🍳 ระบบครัว</button>
+      <button class="menu-item" data-target="tabSales">📜 ประวัติการขาย</button>
+      <button class="menu-item" data-target="tabUsers">👤 ผู้ใช้งานในระบบ</button>
+      <button class="menu-item" data-target="tabSettings">⚙️ การตั้งค่า</button>
+    </nav>
+  </aside>
+
+  <!-- =========== MAIN CONTENT =========== -->
+  <main class="content-area">
+
+    <!-- HEADER -->
+  <header class="admin-header glass-strong">
+    <h2 id="tabTitle">Dashboard Overview</h2>
+    <div class="admin-actions">
+      <button id="sidebarToggle" class="icon-btn only-mobile" aria-label="เมนู">☰</button>
+      <button id="adminThemeToggle" class="icon-btn" aria-label="Toggle theme">🌙</button>
+      <span class="status-dot online"></span> ออนไลน์
+      <button id="btnLogout" class="btn small red" style="margin-left:8px;">ออกจากระบบ</button>
+    </div>
+  </header>
+
+    <!-- ===========================
+         TAB: DASHBOARD
+    ============================ -->
+    <section id="tabDashboard" class="tab-page visible">
+
+      <div class="dash-grid">
+        <div class="dash-card glass">
+          <h3>ยอดขายวันนี้</h3>
+          <div id="dashToday" class="dash-value">0 ฿</div>
+        </div>
+
+        <div class="dash-card glass">
+          <h3>จำนวนบิล</h3>
+          <div id="dashBills" class="dash-value">0</div>
+        </div>
+
+        <div class="dash-card glass">
+          <h3>เมนูขายดี</h3>
+          <div id="dashBestMenu" class="dash-value-sm">-</div>
+        </div>
+
+        <div class="dash-card glass">
+          <h3>โต๊ะยอดนิยม</h3>
+          <div id="dashBestTable" class="dash-value-sm">-</div>
+        </div>
+      </div>
+
+      <div class="dash-lists">
+        <div class="list-box glass">
+          <h3>10 เมนูขายดี</h3>
+          <ul id="topMenuList"></ul>
+        </div>
+
+        <div class="list-box glass">
+          <h3>โต๊ะยอดนิยม</h3>
+          <ul id="topTableList"></ul>
+        </div>
+      </div>
+
+        <div class="dash-filters glass" style="margin-top:20px;">
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+      <label>จากวันที่</label>
+      <input type="date" id="dashStart" />
+      <label>ถึง</label>
+      <input type="date" id="dashEnd" />
+
+      <select id="dashMode">
+        <option value="day">รายวัน</option>
+        <option value="week">รายสัปดาห์</option>
+        <option value="month">รายเดือน</option>
+        <option value="year">รายปี</option>
+      </select>
+
+      <button id="dashApply" class="btn small">ดูสรุป</button>
+    </div>
+  </div>
+  <div id="dashChart" class="dash-chart glass" style="margin-top:12px;"></div>
+
+    </section>
+
+
+    <!-- ===========================
+         TAB: สถานะลูกค้า
+    ============================ -->
+    <section id="tabStatus" class="tab-page">
+      <div class="status-header">
+        <h3>สถานะลูกค้าในร้าน (Real-Time)</h3>
+        <p style="font-size:13px;color:var(--text-sub);margin:4px 0 10px;">
+          คลิกที่โต๊ะเพื่อ จองโต๊ะ / มีลูกค้านั่ง / รวมโต๊ะ / ปริ้น QR / เช็คบิล
+        </p>
+
+        <div class="status-legend">
+          <span><span class="legend-box free"></span> ว่าง</span>
+          <span><span class="legend-box reserved"></span> จองแล้ว</span>
+          <span><span class="legend-box occupied"></span> มีลูกค้านั่ง</span>
+          <span><span class="legend-box merged"></span> รวมโต๊ะ</span>
+        </div>
+      </div>
+
+      <div id="tableStatusGrid" class="status-canvas"></div>
+    </section>
+
+
+    <!-- ===========================
+         TAB: ผังร้าน 2D
+    ============================ -->
+    <section id="tabLayout" class="tab-page">
+      <div class="layout-header">
+        <h3>จัดการผังร้าน 2D</h3>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button id="btnAddTable" class="btn green">+ เพิ่มโต๊ะ</button>
+        </div>
+      </div>
+
+      <div id="tableLayoutWorkspace" class="glass-layout">
+        <div id="layoutCanvas" class="layout-canvas"></div>
+      </div>
+    </section>
+
+
+    <!-- ===========================
+         TAB: สินค้า
+    ============================ -->
+    <section id="tabProducts" class="tab-page">
+      <div class="pm-header">
+        <h3>จัดการสินค้า</h3>
+        <button class="btn green" id="addProductBtn">+ เพิ่มสินค้า</button>
+      </div>
+
+      <div id="productList" class="product-list">
+        <!-- ProductUI -->
+      </div>
+    </section>
+
+
+    <!-- ===========================
+         TAB: หมวดหมู่สินค้า
+    ============================ -->
+    <section id="tabCategories" class="tab-page">
+      <div class="cm-header">
+        <h3>หมวดหมู่สินค้า</h3>
+        <button class="btn green" id="addCategoryBtn">+ เพิ่มหมวดหมู่</button>
+      </div>
+
+      <!-- ใช้ class product-list เพื่อให้ layout เหมือนสินค้า -->
+      <div id="categoryList" class="product-list">
+        <!-- CategoryUI -->
+      </div>
+    </section>
+
+
+    <!-- ===========================
+         TAB: ออเดอร์
+    ============================ -->
+    <section id="tabOrders" class="tab-page">
+      <h3>ออเดอร์ทั้งหมด</h3>
+      <p style="font-size:13px;color:var(--text-sub);margin:4px 0 10px;">
+        จัดการสถานะออเดอร์ต่างๆได้ในหน้านี้
+      </p>
+      <div id="orderList" class="order-list-grid">
+        <!-- OrderUI -->
+      </div>
+    </section>
+
+
+    <!-- ===========================
+         TAB: ครัว
+    ============================ -->
+    <section id="tabKitchen" class="tab-page">
+      <h3>ครัว — รายการที่ต้องทำ</h3>
+      <div id="kitchenList" class="kitchen-grid">
+        <!-- KitchenUI -->
+      </div>
+    </section>
+
+
+    <!-- ===========================
+         TAB: ประวัติการขาย (Sales)
+    ============================ -->
+    <section id="tabSales" class="tab-page">
+      <div class="pm-header">
+        <h3>ประวัติการขาย</h3>
+      </div>
+      <div class="sales-filter glass">
+        <label>จากวันที่:</label>
+        <input type="date" id="salesDateStart" />
+        <label>ถึงวันที่:</label>
+        <input type="date" id="salesDateEnd" />
+        <button class="btn green" id="filterSalesBtn">ค้นหา</button>
+      </div>
+
+      <!-- เปลี่ยน UI เป็น Table List -->
+      <div class="glass" style="margin-top:10px; padding:10px; overflow-x:auto;">
+        <table class="data-table" id="salesTable">
+          <thead>
+            <tr>
+              <th>บิลเลขที่</th>
+              <th>วันที่/เวลา</th>
+              <th>โต๊ะ</th>
+              <th>ประเภท</th>
+              <th>ยอดขาย</th>
+              <th>จัดการ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Sales Rows -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===========================
+         TAB: User Manager
+    ============================ -->
+    <section id="tabUsers" class="tab-page">
+      <div class="pm-header">
+        <h3>จัดการผู้ใช้งานระบบ (User Manager)</h3>
+        <button class="btn green" id="addUserBtn">+ เพิ่มผู้ใช้</button>
+      </div>
+      
+      <div class="glass" style="margin-top:10px; padding:10px; overflow-x:auto;">
+        <table class="data-table" id="usersTable">
+          <thead>
+            <tr>
+              <th>ลำดับ</th>
+              <th>ชื่อผู้ใช้</th>
+              <th>บทบาท</th>
+              <th>สร้างเมื่อ</th>
+              <th>ดำเนินการ</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+
+    <!-- ===========================
+         TAB: ตั้งค่า
+    ============================ -->
+    <section id="tabSettings" class="tab-page">
+      <h3>ตั้งค่าระบบ</h3>
+      <p style="font-size:14px;color:var(--text-sub);">
+        - ข้อมูลระบบ POS RIM KLONG<br />
+        - POS BY SuperA<br />
+      </p>
+      
+      <div class="glass" style="padding:15px; margin-top:10px; max-width:400px;">
+        <h4>ข้อมูลร้านค้า</h4>
+        <!-- Demo -->
+        <p>ชื่อร้าน: RIM KLONG Camp</p>
+        <p>เวอร์ชัน: 1.0.0</p>
+        <p>วันที่ 25-Nov-2025</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========== ADMIN THEME + PATTERN BUTTON =========== -->
+  <script>
+    (function () {
+      const body = document.body;
+      const btn = document.getElementById("adminThemeToggle");
+
+      // โหลดธีมจาก localStorage
+      const saved = localStorage.getItem("rk_admin_theme") || "light";
+      if (saved === "dark") {
+        body.classList.remove("theme-light");
+        body.classList.add("theme-dark");
+        if (btn) btn.textContent = "☀️";
+      }
+
+      if (btn) {
+        btn.addEventListener("click", () => {
+          const isDark = body.classList.contains("theme-dark");
+          if (isDark) {
+            body.classList.remove("theme-dark");
+            body.classList.add("theme-light");
+            btn.textContent = "🌙";
+            localStorage.setItem("rk_admin_theme", "light");
+          } else {
+            body.classList.remove("theme-light");
+            body.classList.add("theme-dark");
+            btn.textContent = "☀️";
+            localStorage.setItem("rk_admin_theme", "dark");
+          }
+        });
+      }
+
+      // ปุ่ม Logout
+      const btnLogout = document.getElementById("btnLogout");
+      if(btnLogout) {
+        btnLogout.addEventListener("click", () => {
+           if(confirm("ต้องการออกจากระบบหรือไม่?")) {
+             localStorage.removeItem("rk_admin_user");
+             location.reload();
+           }
+        });
+      }
+
+      // ปุ่มสร้างผังโต๊ะแบบ Pattern 4 ที่นั่ง (เดโม)
+      const addTableBtn = document.getElementById("btnAddTable");
+      if (addTableBtn) {
+        addTableBtn.addEventListener("click", () => {
+          if (window.LayoutEngine) {
+            LayoutEngine.applyPattern("4seat");
+          }
+        });
+      }
+    })();
+  </script>
+
+  <!-- =========== MAIN JS =========== -->
+  <!-- Supabase v2 -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
